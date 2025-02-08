@@ -16,7 +16,7 @@ __pycache__/
 
 # Settings #
 ############
-config.json
+*config.json
 
 # Downloaded Files #
 ####################

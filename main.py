@@ -24,7 +24,6 @@ class GUI:
         self.hwinfo: HWInfo = HWInfo()
         self.hwinfo_values: dict[str, dict[str, Any]
                                  ] = self.hwinfo.get_values()
-        self.update_relevent_values(True)
 
         self.notebook: Notebook = Notebook(self.root)
         self.notebook.pack(fill='both', expand=True)
@@ -104,21 +103,10 @@ class GUI:
     def save_callback(self, cfg: dict) -> None:
         self.apply_theme(cfg['theme'])
 
-    def update_relevent_values(self, save: bool) -> dict[str, Any]:
-        self.values = flatten_dict(self.hwinfo_values)
-        relevant: list[str] = [
-            key for key, value in cfg.get_value_from_path('values').items() if value['enabled']]
-        relevant_values: dict[str, Any] = {
-            key: self.values.get(key) for key in relevant}
-        if save:
-            self.relevant_values = relevant_values
-        return relevant_values
-
     def update(self) -> None:
         cfg: Config = Config()
         self.hwinfo_values = self.hwinfo.get_values()
         self.values = flatten_dict(self.hwinfo_values)
-        relevant_values: dict[str, Any] = self.update_relevent_values(False)
         if self.search.run:
             for device in self.client.devices:
                 colors: list[RGBColor] = [
@@ -143,10 +131,36 @@ class GUI:
                     continue
                 print('Set')
                 device.set_colors(colors, True)
-        self.relevant_values = relevant_values
 
 
 cfg: Config = Config()
+try:
+    cfg.get_value_from_path('params')[0]
+except:
+    temp: HWInfo = HWInfo()
+    hwinfo_values = temp.get_values()
+    first_sensor_path = None
 
-gui: GUI = GUI(cfg.smart_get2('equilux', 'theme'))
-gui.hwinfo.computer.Close()
+    # Suche nach dem ersten Sensor mit einem Float-Wert
+    for device, sensors in hwinfo_values.items():
+        for sensor, value in flatten_dict({device: sensors}).items():
+            if isinstance(value, float):
+                first_sensor_path = sensor
+                break
+        if first_sensor_path:
+            break
+
+    if first_sensor_path:
+        cfg.write_value_to_path(
+            f'params/{first_sensor_path}', {'start': 0, 'end': 0, 'device': 0, 'enabled': 0, 'inverted': 0, 'color': '#FFFFFF', 'max': 100})
+    else:
+        print("Kein Sensor mit Float-Wert gefunden.")
+        exit(1)
+
+try:
+    gui: GUI = GUI(cfg.smart_get2('equilux', 'theme'))
+finally:
+    try:
+        gui.hwinfo.computer.Close()  # type: ignore
+    except:
+        pass
