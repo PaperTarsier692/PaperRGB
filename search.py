@@ -78,6 +78,15 @@ class GUI:
         self.load()
         self.start_update_thread()
 
+    def _reload(self) -> None:
+        self.param_menu['menu'].delete(0, 'end')
+        self.cfg.read()
+        for param in self.cfg.get_value_from_path('params/'):
+            self.param_menu['menu'].add_command(
+                label=param, command=lambda param=param: self.param_var.set(param))
+        self.param_var.set(
+            next(iter(self.cfg.get_value_from_path('params/')), ''))
+
     def start_update_thread(self) -> None:
         update_thread = threading.Thread(
             target=self.update_value_loop, name='SEARCH_UPDATE_THREAD')

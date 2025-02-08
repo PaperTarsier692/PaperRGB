@@ -11,6 +11,7 @@ class GUI:
         self.root: Frame = root
         self.params: dict[str, bool]
         self.hwinfo: HWInfo = HWInfo()
+        self.changes: bool = False
 
         self.canvas: Canvas = Canvas(self.root)
         self.scrollbar: Scrollbar = Scrollbar(
@@ -38,6 +39,7 @@ class GUI:
         def add_checkbox(name: str, full_name: str) -> None:
             def callback(checkbox: Checkbutton) -> None:
                 value: bool = checkbox.instate(['selected'])
+                self.changes = True
                 if value:
                     self.cfg.write_value_to_path(
                         f'params/{full_name}', True)

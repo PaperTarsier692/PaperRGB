@@ -53,7 +53,7 @@ class GUI:
         print('Config added')
 
         print('Finished adding categories')
-        self.notebook.bind('<<NotebookTabChanged>>', self.set_name)
+        self.notebook.bind('<<NotebookTabChanged>>', self.tab_change)
         self.apply_theme(self.theme)
         self.start_update_thread()
         self.root.mainloop()
@@ -73,10 +73,13 @@ class GUI:
             self.update()
             sleep(cfg.smart_get2(2000, 'update_ms') / 1000)
 
-    def set_name(self, *args) -> None:
+    def tab_change(self, *args) -> None:
         self.root.title(
-            f'{self.notebook.tab(self.notebook.index("current"), "text")} - {self.theme.capitalize()}')
+            f'{self.notebook.tab(self.notebook.index("current"), "text")}')
         self.search.run = self.notebook.index('current') == 0
+        if self.config.changes:
+            self.config.changes = False
+            self.search._reload()
 
     def apply_theme(self, theme: str) -> None:
         self.theme = theme
@@ -85,7 +88,6 @@ class GUI:
         bg_color = self.style.lookup('TFrame', 'background') or '#000'
         fg_color = self.style.lookup('TLabel', 'foreground') or '#FFF'
         self.apply_theme_widgets(self.root, bg_color, fg_color)
-        self.set_name()
 
     def apply_theme_widgets(self, widget, bg_color, fg_color) -> None:
         try:
