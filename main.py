@@ -3,8 +3,8 @@ from openrgb.utils import RGBColor, ModeData
 from ttkthemes import ThemedTk, ThemedStyle
 from tkinter.ttk import Notebook, Frame
 from openrgb import OpenRGBClient
+from typing import Any, Union
 from hwinfo import HWInfo
-from typing import Any
 from time import sleep
 import threading
 import config
@@ -135,27 +135,22 @@ class GUI:
 
 cfg: Config = Config()
 try:
+    cfg.get_value_from_path('values')[0]
+except:
+    temp: HWInfo = HWInfo()
+    first_sensor_path: str = list(flatten_dict(temp.get_values()).items())[
+        0][0]
+    temp.computer.Close()
+    cfg.write_value_to_path(
+        f'values/{first_sensor_path}', {'start': 0, 'end': 0, 'device': 0, 'enabled': 0, 'inverted': 0, 'color': '#FFFFFF', 'max': 100})
+
+try:
     cfg.get_value_from_path('params')[0]
 except:
     temp: HWInfo = HWInfo()
-    hwinfo_values = temp.get_values()
-    first_sensor_path = None
-
-    # Suche nach dem ersten Sensor mit einem Float-Wert
-    for device, sensors in hwinfo_values.items():
-        for sensor, value in flatten_dict({device: sensors}).items():
-            if isinstance(value, float):
-                first_sensor_path = sensor
-                break
-        if first_sensor_path:
-            break
-
-    if first_sensor_path:
-        cfg.write_value_to_path(
-            f'params/{first_sensor_path}', {'start': 0, 'end': 0, 'device': 0, 'enabled': 0, 'inverted': 0, 'color': '#FFFFFF', 'max': 100})
-    else:
-        print("Kein Sensor mit Float-Wert gefunden.")
-        exit(1)
+    cfg.write_value_to_path('params/', {list(flatten_dict(temp.get_values()).items())[
+        0][0]: True})
+    temp.computer.Close()
 
 try:
     gui: GUI = GUI(cfg.smart_get2('equilux', 'theme'))
