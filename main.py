@@ -3,8 +3,8 @@ from openrgb.utils import RGBColor, ModeData
 from ttkthemes import ThemedTk, ThemedStyle
 from tkinter.ttk import Notebook, Frame
 from openrgb import OpenRGBClient
-from typing import Any, Union
 from hwinfo import HWInfo
+from typing import Any
 from time import sleep
 import threading
 import config
@@ -47,7 +47,7 @@ class GUI:
 
         self.config_frame: Frame = Frame(self.notebook)
         self.config: config.GUI = config.GUI(
-            self.config_frame, self.root.get_themes(), self.save_callback)
+            self.config_frame)
         self.config_frame.pack(fill='both', expand=True)
         self.notebook.add(self.config_frame, text='Config', state='normal')
         print('Config added')
@@ -100,9 +100,6 @@ class GUI:
         for child in widget.winfo_children():
             self.apply_theme_widgets(child, bg_color, fg_color)
 
-    def save_callback(self, cfg: dict) -> None:
-        self.apply_theme(cfg['theme'])
-
     def update(self) -> None:
         cfg: Config = Config()
         self.hwinfo_values = self.hwinfo.get_values()
@@ -135,7 +132,7 @@ class GUI:
 
 cfg: Config = Config()
 try:
-    cfg.get_value_from_path('values')[0]
+    assert len(list(cfg.get_value_from_path('values').keys())) > 0
 except:
     temp: HWInfo = HWInfo()
     first_sensor_path: str = list(flatten_dict(temp.get_values()).items())[
@@ -145,7 +142,7 @@ except:
         f'values/{first_sensor_path}', {'start': 0, 'end': 0, 'device': 0, 'enabled': 0, 'inverted': 0, 'color': '#FFFFFF', 'max': 100})
 
 try:
-    cfg.get_value_from_path('params')[0]
+    assert len(list(cfg.get_value_from_path('params').keys())) > 0
 except:
     temp: HWInfo = HWInfo()
     cfg.write_value_to_path('params/', {list(flatten_dict(temp.get_values()).items())[

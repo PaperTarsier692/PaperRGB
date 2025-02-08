@@ -171,12 +171,17 @@ class Config:
             self.write_value_to_path(path, inp)
             return inp
 
-    def get_value_from_path(self, path: str) -> Any:
-        keys: list[str] = path.strip('/').split('/')
-        value: Any = self.cfg
-        for key in keys:
-            value = value[key]
-        return value
+    def get_value_from_path(self, path: str, error_ok: bool = False) -> Any:
+        try:
+            keys: list[str] = path.strip('/').split('/')
+            value: Any = self.cfg
+            for key in keys:
+                value = value[key]
+            return value
+        except:
+            if not error_ok:
+                raise KeyError(f'Key {path} not found')
+            return None
 
     def write_value_to_path(self, path: str, value: Any, save: bool = True) -> None:
         keys: list[str] = path.strip('/').split('/')
