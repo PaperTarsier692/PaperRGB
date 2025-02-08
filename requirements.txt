@@ -1,0 +1,5 @@
+openrgb-python
+papertools
+ttkthemes
+requests
+psutil
