@@ -113,9 +113,9 @@ def start_main(name: str) -> None:
     if name != '__main__':
         return
     if windows:
-        os.system(f'python gui.py')
+        os.system(f'python main.py')
     else:
-        os.system(f'python3 gui.py')
+        os.system(f'python3 main.py')
 
 
 class Config:
