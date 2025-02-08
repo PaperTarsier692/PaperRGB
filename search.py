@@ -157,7 +157,7 @@ class GUI:
             'enabled': int(self.enabled.instate(['selected'])),
             'inverted': int(self.inverted.instate(['selected'])),
             'color': self.selected_color,
-            'max': int(self.max.get())
+            'max': float(self.max.get())
         })
         self.run = True
 
