@@ -1,3 +1,4 @@
+hardwaremonitor
 openrgb-python
 papertools
 ttkthemes
