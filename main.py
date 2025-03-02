@@ -1,4 +1,6 @@
-from common import ensure_venv, fix_res, Config, flatten_dict
+from common import ensure_venv
+ensure_venv(__file__)
+from common import fix_res, Config, flatten_dict
 from openrgb.utils import RGBColor, ModeData
 from ttkthemes import ThemedTk, ThemedStyle
 from tkinter.ttk import Notebook, Frame
@@ -9,7 +11,6 @@ from time import sleep
 import threading
 import config
 import search
-ensure_venv(__file__)
 
 
 fix_res()
